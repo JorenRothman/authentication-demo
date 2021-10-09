@@ -6,6 +6,8 @@
     "dependencies": {
         "@koa/router": "^10.1.1",
         "@types/joi": "^17.2.3",
+        "@types/lodash": "^4.14.175",
+        "argon2": "^0.28.2",
         "colors": "^1.4.0",
         "dotenv": "^10.0.0",
         "knex": "^0.95.11",
@@ -13,6 +15,7 @@
         "koa-bodyparser": "^4.3.0",
         "koa-context-validator": "^1.0.0",
         "koa-json-error": "^3.1.2",
+        "lodash": "^4.17.21",
         "mysql": "^2.18.1"
     },
     "devDependencies": {

@@ -1,5 +1,7 @@
 import { Model } from "./Model"
+import { UserExists } from "../exceptions/UserExists"
 import { UserNotFound } from "../exceptions/UserNotFound"
+import { hashString } from "../services/hashing"
 import { knex } from "../services/database"
 
 interface IUser {
@@ -34,6 +36,21 @@ class User extends Model implements IUser {
         }
 
         return user
+    }
+
+    async insert(): Promise<boolean> {
+        const hash = await hashString(this.password)
+
+        try {
+            await knex<User>("users").insert({
+                username: this.username,
+                password: hash,
+            })
+        } catch (error) {
+            throw new UserExists()
+        }
+
+        return true
     }
 
     serialize() {

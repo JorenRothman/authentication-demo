@@ -3,7 +3,9 @@ import { authRouter } from "./routes/auth"
 import bodyParser from "koa-bodyparser"
 import dotenv from "dotenv"
 import error from "koa-json-error"
+import { omit } from "lodash"
 import { responseTime } from "./middleware/util/responseTime"
+import { userRouter } from "./routes/user"
 
 dotenv.config()
 
@@ -20,9 +22,15 @@ app.use(async (ctx, next) => {
         ctx.app.emit("error", err, ctx)
     }
 })
-app.use(error())
+app.use(
+    error({
+        postFormat: (e, obj) =>
+            process.env.NODE_ENV === "production" ? omit(obj, "stack") : obj,
+    })
+)
 app.use(bodyParser({}))
 app.use(authRouter.routes())
+app.use(userRouter.routes())
 
 app.listen(process.env.PORT, () => {
     console.log(`Server started on localhost:${app.context.env.PORT}`)

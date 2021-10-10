@@ -1,7 +1,8 @@
+import { Hash } from "../services/hashing"
 import { Model } from "./Model"
 import { UserExists } from "../exceptions/UserExists"
+import { UserModelFactory } from "../services/factories/UserModelFactory"
 import { UserNotFound } from "../exceptions/UserNotFound"
-import { hashString } from "../services/hashing"
 import { knex } from "../services/database"
 
 interface IUser {
@@ -16,6 +17,8 @@ class User extends Model implements IUser {
     public username: string
 
     public password: string
+
+    public refresh_token: string
 
     constructor(id: number, username: string, password: string) {
         super()
@@ -35,11 +38,11 @@ class User extends Model implements IUser {
             throw new UserNotFound()
         }
 
-        return user
+        return UserModelFactory.create(user)
     }
 
     async insert(): Promise<boolean> {
-        const hash = await hashString(this.password)
+        const hash = await Hash.create(this.password)
 
         try {
             await knex<User>("users").insert({
@@ -51,6 +54,16 @@ class User extends Model implements IUser {
         }
 
         return true
+    }
+
+    async insertRefreshToken(refreshToken: string) {
+        try {
+            const user = await knex<User>("users").where("id", this.id).update({
+                refresh_token: refreshToken,
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     serialize() {

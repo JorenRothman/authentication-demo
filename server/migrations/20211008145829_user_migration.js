@@ -5,6 +5,7 @@ exports.up = function (knex) {
         table.increments('id');
         table.string('username', 255).notNullable();
         table.string('password', 255).notNullable();
+        table.string('refresh_token', 255);
 
         table.unique('username');
     });
